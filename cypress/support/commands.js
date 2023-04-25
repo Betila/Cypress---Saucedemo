@@ -1,4 +1,5 @@
 import user from '../fixtures/user.json'
+import { faker } from '@faker-js/faker'
 
 // -- This is a parent command --
 Cypress.Commands.add('realizarLoginSucesso', () => {
@@ -25,10 +26,30 @@ Cypress.Commands.add('realizarLogoutcomSucesso', () => {
     cy.get('@sobrenome').should('be.empty')
 })
 
+Cypress.Commands.add('selecionarProdutoCarrinho', () => {
+    cy.get('[data-test=add-to-cart-sauce-labs-backpack]').click();
+    cy.get('[data-test=add-to-cart-sauce-labs-bike-light]').click();
+})
 
+Cypress.Commands.add('verificarValorTotal', () => {
+    //clicar no carrinho
+    cy.get('.shopping_cart_link').click();
+    //clicar em continuar
+    cy.get('[data-test=checkout]').click();
+    //informar nome, sobrenome e código postal
+    cy.get('[data-test=firstName]').as('name').type(faker.name.firstName());
+    cy.get('[data-test=lastName]').as('sobrenome').type(faker.name.lastName());
+    cy.get('[data-test=postalCode]').as('codigopostal').type(faker.address.zipCode());
+    //Selecionar o botão Continuar
+    cy.get('[data-test=continue]').click();
+        
+    //Comparando valor total
+    cy.get('.summary_total_label').invoke('text').then(($value) => {
+      cy.log($value)
+        expect($value).to.eq('Total: $43.18')
+    })
 
-
-
+})
 
 //
 //
